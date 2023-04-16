@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/data/mongo 
+		http://www.springframework.org/schema/data/mongo/spring-mongo.xsd">
+	<!-- 将资源文件不要进行拦截 -->
+	<!-- 处理静态资源 -->
+	<mvc:default-servlet-handler />
+	<mvc:annotation-driven></mvc:annotation-driven>
+	
+	<!-- controller:返回字符串编码为utf-8 -->
+	<mvc:annotation-driven>  
+	    <mvc:message-converters register-defaults="true">  
+	        <bean class="org.springframework.http.converter.StringHttpMessageConverter">  
+	            <property name="supportedMediaTypes" value = "text/html;charset=UTF-8" />  
+	        </bean>  
+	    </mvc:message-converters>  
+	</mvc:annotation-driven>
+	
+	<context:component-scan base-package="com.bookshop.*.controller"></context:component-scan>
+    <context:component-scan base-package="com.bookshop.*.service.impl"></context:component-scan>
+    <context:component-scan base-package="com.bookshop.*.dao.impl"></context:component-scan>
+	
+	<!-- 给视图解析器配置前缀和后缀 -->
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/"></property>
+		<property name="suffix" value=".jsp"></property>
+	</bean>  
+	
+	<!-- 配置一个数据库连接池 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="com.mysql.jdbc.Driver"></property>
+		<property name="jdbcUrl" value="jdbc:mysql://localhost:3306/Bookshop?useSSL=false"></property>
+		<property name="user" value="root"></property>
+		<property name="password" value="xpy3464.."></property>
+	</bean>
+	<bean id="sqlSessionFactory"
+		class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 需要连接池的配置 -->
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="mapperLocations" value="classpath:com/bookshop/*/bean/*.xml"></property>
+	</bean>
+	
+	<!-- 使用注解的方式，进行事务的植入 -->
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+	
+	<!-- 配置事物管理类 -->
+	 <!-- MyBatis的事务管理是交给连接池进行管理，JDBC事务管理 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+	
+	<!-- 文件上传功能 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	    <!-- one of the properties available; the maximum file size in bytes -->
+	    <property name="maxUploadSize" value="3000000"/>
+	</bean>
+	
+	<!-- 请勿修改
+	！！！！！！！！！！！！！！！ -->
+	<!-- 默认ID为mongo -->
+  <!--<mongo:mongo-client id="mongo" host="82.157.154.154" port="27017">
+    <mongo:client-options write-concern="NORMAL" />
+  </mongo:mongo-client>-->
+  
+  <!-- 操作mongodb的CURD, 对mongo进行数据库操作的封装-->
+  <!--<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+  	<constructor-arg name="mongo" ref="mongo"/>
+  	<constructor-arg name="databaseName" value="mydb"/>
+  </bean> -->
+  
+  <!-- 是Redis中的session管理的配置Bean -->
+  <bean class="org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration">
+   <!-- session的生命周期 -->
+   <property name="maxInactiveIntervalInSeconds" value="3600"></property>
+  </bean>
+  
+  <bean id="jedisFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+   	<property name="hostName" value="127.0.0.1"/>
+      <property name="port" value="6379"/>
+      <property name="timeout" value="4000"/>
+  </bean>
+</beans>

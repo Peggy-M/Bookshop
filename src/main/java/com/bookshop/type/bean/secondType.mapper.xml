@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.bookshop.type.bean.secondTypeMapper">
+      <resultMap type="com.bookshop.type.bean.SecondTypeDTO" id="secondTypeResultMapper">
+      	<id column="type_id" property="typeId"/>
+      	<result column="type_name" property="typeName"/>
+      	<result column="type_first_id" property="typeFirstId"/>
+      </resultMap>
+      
+      <select id="getSecondTypeById" parameterType="int" resultMap="secondTypeResultMapper">
+        select type_id,type_name,type_first_id from tb_type_second where type_first_id=#{typeFirstId}
+      </select>
+      
+      <select id="getSecondTypeBySecondId" parameterType="int" resultMap="secondTypeResultMapper">
+        select type_id,type_name,type_first_id from tb_type_second where type_id=#{typeId}
+      </select>
+      
+      <select id="getAllSecondType" resultMap="secondTypeResultMapper">
+      	select * from tb_type_second
+      </select>
+      
+      <select id="getSecondTypeCount" parameterType="int" resultType="int">
+  		select count(type_id) from tb_type_second
+  	  </select>
+  	  
+  	  <select id="getSecondTypeByPage" parameterType="int" resultMap="secondTypeResultMapper">
+		select * from tb_type_second order by type_id limit #{pageno},8 
+	  </select>
+	  
+	  <insert id="addSecondType" parameterType="com.bookshop.type.bean.SecondTypeDTO">
+		insert into tb_type_second(type_name,type_first_id) values(#{typeName},#{typeFirstId})
+	  </insert>
+	  
+	  <update id="updateSecondType" parameterType="com.bookshop.type.bean.SecondTypeDTO">
+		update tb_type_second set type_name=#{typeName},type_first_id=#{typeFirstId} where type_id=#{typeId}
+	  </update>
+	  
+	  <delete id="deleteSecondType" parameterType="com.bookshop.type.bean.SecondTypeDTO">
+		delete from tb_type_second where type_id=#{typeId}
+	  </delete>
+	  
+	  <select id="selectSecond" resultMap="secondTypeResultMapper" parameterType="int">
+  		select type_name,type_id from tb_type_second where type_id = #{typeId}
+  	</select>
+  	
+  	<select id="selectSecondIdByName" resultMap="secondTypeResultMapper" parameterType="String">
+  		select type_id from tb_type_second where type_name = #{typeName}
+  	</select>
+  	
+  	 <select id="selectSecondList" resultMap="secondTypeResultMapper">
+  		select type_name,type_id from tb_type_second 
+  	</select>
+  </mapper>

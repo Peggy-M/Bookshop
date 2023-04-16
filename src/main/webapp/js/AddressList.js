@@ -1,0 +1,13 @@
+var addrform=null;function addrDel(id){if(window.confirm("您确定要删除吗?")){jQuery.post(frontPath+"/Member/AddressDelete.do",{addressId:id},function(msg){var aData=msg.split(",");if(aData[0]==0){document.location.reload();}});}}
+function checkForm(){if(jQuery("#realName").val()==""){alert("请填写收货人！");jQuery("#realName").focus();return false;}
+var bool=true;jQuery("select[class='selectTree']").each(function(){if(this.selectedIndex==0){alert("所在地没有正确选择！");this.focus();bool=false;return false;}else{bool=true;}});if(bool==false){return false;}
+if(jQuery("#address").val()==""){alert("请填写详细地址！");jQuery("#address").focus();return false;}
+if(jQuery("#telephone").val()==""&&jQuery("#mobilePhone").val()==""){alert("收货人固定电话和手机号码必须填写一个！");return false;}
+var patrn=/^((\d){2,4}[-])?((\d){0,8})$/;var telephone=jQuery("#telephone");if(telephone.val()!=""){if(!patrn.exec(telephone.val())){alert("联系电话应为数字,如：020-12345678 ！");telephone.focus();return false;}}
+var mPhone=jQuery("#mobilePhone");if(jQuery("#mobilePhone").val()!=""){if(isNaN(mPhone.val())){alert("手机号码必须为数字！");mPhone.focus();return false;}}
+var postalCode=jQuery("#postalCode");if(postalCode.val()==""||postalCode.val().length!=6||isNaN(postalCode.val())){alert("邮政编码应为6位数字！");postalCode.focus();return false;}
+var telephoneType=document.getElementsByName("telephoneType");var telephoneTypeValue=1;for(var i=0;i<telephoneType.length;i++){if(telephoneType[i].checked==true){telephoneTypeValue=telephoneType[i].value;}}
+var data=new Object();data["realName"]=jQuery("#realName").val();data["regionId"]=jQuery("#regionId").val();data["address"]=jQuery("#address").val();data["addressType"]=0;data["telephone"]=jQuery("#telephone").val();data["mobilePhone"]=jQuery("#mobilePhone").val();data["postalCode"]=jQuery("#postalCode").val();data["telephoneType"]=telephoneTypeValue;jQuery.ajaxSettings['contentType']="application/x-www-form-urlencoded; charset=utf-8";jQuery.post(frontPath+"/Member/AddAddress.do",data,addrResult);}
+function addrResult(msg){var aData=msg.split(",");if(aData[0]==0){alert("增加成功！");window.location.reload();}
+if(aData[0]==1){alert("抱歉，增加地址失败，请稍后再试！");}}
+function saveAddress(addrId){jQuery.get(frontPath+"/Cart/AddressGet.do",{addressId:addrId},function(data){var aData=eval(data);var newEntry=new userTradeInfo();newEntry.consigneeId=aData.id;newEntry.accepterName=aData.name;newEntry.accepterAddress=aData.addr;newEntry.telephone=aData.tel;newEntry.mobilephone=aData.mobile;newEntry.postalCode=aData.postCode;newEntry.regionId=aData.regionId;newEntry.userId=userid;var newEntrytoStr=JSON.stringify(newEntry);jQuery.post(frontPath+"/Cart/saveUserTradeInfoFForjQuery.do?T="+Math.random(),{newEntrytoStr:newEntrytoStr},function(){alert("修改成功");});});}

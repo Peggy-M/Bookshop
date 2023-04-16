@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.bookshop.type.bean.firstTypeMapper">
+  	<resultMap type="com.bookshop.type.bean.FirstTypeDTO" id="firstTypeResultMapper">
+  		<id column="type_id" property="typeId"/>
+  		<result column="type_name" property="typeName"/>
+  	</resultMap>
+  	
+  	<select id="getFirstTypeById" parameterType="int" resultMap="firstTypeResultMapper">
+  		select type_id,type_name from tb_type_first where type_id = #{typeId}
+  	</select>
+  	
+  	<select id="getALLFirstType" resultMap="firstTypeResultMapper">
+  		select * from tb_type_first
+  	</select>
+  	
+  	<select id="getFirstTypeCount" parameterType="int" resultType="int">
+  		select count(type_id) from tb_type_first
+  	</select>
+  	
+  	<select id="getFirstTypeByPage" parameterType="int" resultMap="firstTypeResultMapper">
+		select * from tb_type_first order by type_id limit #{pageno},8 
+	</select>
+	
+	<insert id="addFirstType" parameterType="com.bookshop.type.bean.FirstTypeDTO">
+		insert into tb_type_first(type_name) values(#{typeName})
+	</insert>
+	
+	<update id="updateFirstType" parameterType="com.bookshop.type.bean.FirstTypeDTO">
+		update tb_type_first set type_name=#{typeName} where type_id=#{typeId}
+	</update>
+	
+	<delete id="deleteFirstType" parameterType="com.bookshop.type.bean.FirstTypeDTO">
+		delete from tb_type_first where type_id=#{typeId}
+	</delete>
+  	<select id="selectFirstList" resultMap="firstTypeResultMapper">
+  		select type_name,type_id from tb_type_first
+  	</select>
+  	
+  	<select id="selectIdByName" resultMap="firstTypeResultMapper" parameterType="String">
+  		select type_id from tb_type_first where type_name = #{typeName}
+  	</select>
+  </mapper>

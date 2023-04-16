@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.bookshop.type.bean.thirdTypeMapper">
+      <resultMap type="com.bookshop.type.bean.ThirdTypeDTO" id="thirdTypeResultMapper">
+      	<id column="type_id" property="typeId"/>
+      	<result column="type_name" property="typeName"/>
+      	<result column="type_second_id" property="typeSecondId"/>
+      </resultMap>
+      
+      <select id="getThirdTypeById" parameterType="int" resultMap="thirdTypeResultMapper">
+        select type_id,type_name,type_second_id from tb_type_third where type_second_id=#{typeSecondId}
+      </select>
+      
+      <select id="getThirdTypeByThirdId" parameterType="int" resultMap="thirdTypeResultMapper">
+        select * from tb_type_third where type_id=#{typeId}
+      </select>
+      
+      <select id="getThirdTypeCount" parameterType="int" resultType="int">
+  		select count(type_id) from tb_type_third
+  	  </select>
+  	  
+  	  <select id="getThirdTypeByPage" parameterType="int" resultMap="thirdTypeResultMapper">
+		select * from tb_type_third order by type_id limit #{pageno},8 
+	  </select>
+	  
+	  <insert id="addThirdType" parameterType="com.bookshop.type.bean.ThirdTypeDTO">
+		insert into tb_type_third(type_name,type_second_id) values(#{typeName},#{typeSecondId})
+	  </insert>
+	  
+	  <update id="updateThirdType" parameterType="com.bookshop.type.bean.ThirdTypeDTO">
+		update tb_type_third set type_name=#{typeName},type_second_id=#{typeSecondId} where type_id=#{typeId}
+	  </update>
+	  
+	  <delete id="deleteThirdType" parameterType="com.bookshop.type.bean.ThirdTypeDTO">
+		delete from tb_type_third where type_id=#{typeId}
+	  </delete>
+	  
+	   <select id="selectThird" resultMap="thirdTypeResultMapper" parameterType="int">
+  		select type_name,type_id from tb_type_third where type_id = #{typeId}
+  	</select>
+  	
+  	<select id="selectThirdIdByName" resultMap="thirdTypeResultMapper" parameterType="String">
+  		select type_id from tb_type_third where type_name = #{typeName}
+  	</select>
+  	
+  	<select id="selectThirdList" resultMap="thirdTypeResultMapper">
+  		select type_name,type_id from tb_type_third
+  	</select>
+  </mapper>

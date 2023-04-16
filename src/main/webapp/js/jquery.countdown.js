@@ -1,0 +1,5 @@
+var hasBegin=false;jQuery.fn.countdown=function(options){if(!options)options='()';if(jQuery(this).length==0)return false;var obj=this;if(options.seconds<0||options.seconds=='undefined')
+{if(options.callback)eval(options.callback);return null;}
+window.setTimeout(function(){var day=options.seconds/(1000*60*60*24);var timeContent="";if(day<=1){var h=Math.floor((options.seconds)/(1000*60*60));var m=Math.floor((options.seconds)/(1000*60))%60;var s=Math.floor((options.seconds)/(1000))%60;if(hasBegin==false){timeContent="<ul><li class='num' id='theHour'>"+((h<10)?("0"+h):h)+"</li><li> ±</li> "+"<li class='num' id='theMinuter'>"+((m<10)?("0"+m):m)+"</li> <li>∑÷</li>"+"<li class='num' id='theSecond'>"+((s<10)?("0"+s):s)+"</li> <li>√Î</li></ul>";jQuery(obj).html(timeContent);hasBegin=true;}else{jQuery("#theHour").html((h<10)?("0"+h):h);jQuery("#theMinuter").html((m<10)?("0"+m):m);jQuery("#theSecond").html((s<10)?("0"+s):s);}}
+options.seconds=options.seconds-1000;if(options.seconds<0)options.seconds=0;jQuery(obj).countdown(options);},1000);return this;}
+jQuery.fn.countdown.stop=function(){window.clearTimeout(setTimeout("0")-1);}

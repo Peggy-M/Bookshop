@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.bookshop.cart.bean.cartMapper">
+  	<resultMap type="com.bookshop.cart.bean.CartDTO" id="cartResultMapper">
+  		<id column="cart_id" property="cartId"/>
+  		<result column="cart_book_image" property="cartBookImage"/>
+  		<result column="cart_book_name" property="cartBookName"/>
+  		<result column="cart_book_sellprice" property="cartBookSellprice"/>
+  		<result column="cart_book_price" property="cartBookPrice"/>
+  		<result column="cart_book_number" property="cartBookNumber"/>
+  		<result column="cart_book_addtime" property="cartBookAddtime"/>
+  		<result column="cart_user_id" property="cartUserId"/>
+  	</resultMap>
+  	
+  	<select id="getCartById" parameterType="int" resultMap="cartResultMapper">
+  		select * from tb_cart where cart_id = #{cartId}
+  	</select>
+  	
+  	<select id="getCartListByUserId" parameterType="java.util.Map" resultMap="cartResultMapper">
+  		select * from tb_cart where cart_user_id = #{cartUserId} order by cart_id limit #{pageno},8
+  	</select>
+  	
+  	<select id="getAllCart" resultMap="cartResultMapper">
+  		select * from tb_cart
+  	</select>
+  	
+  	<select id="getCartCount" parameterType="int" resultType="int">
+  		select count(cart_id) from tb_cart
+  	</select>
+  	
+  	<select id="getUserCartCount" parameterType="int" resultType="int">
+  		select count(cart_id) from tb_cart where cart_user_id = #{cartUserId}
+  	</select>
+  	
+  	<select id="getCartListByPage" parameterType="int" resultMap="cartResultMapper">
+  		select * from tb_cart order by cart_id limit #{pageno},8
+  	</select>
+  	
+  	<insert id="addCart" parameterType="com.bookshop.cart.bean.CartDTO">
+  		insert tb_cart(cart_book_image,cart_book_name,cart_book_sellprice,cart_book_price,cart_book_number,cart_book_addtime,cart_user_id) 
+  		          values(#{cartBookImage},#{cartBookName},#{cartBookSellprice},#{cartBookPrice},#{cartBookNumber},#{cartBookAddtime},#{cartUserId})
+  	</insert>
+  	
+  	<update id="updateCart" parameterType="com.bookshop.cart.bean.CartDTO">
+  		update tb_cart set cart_book_image=#{cartBookImage},cart_book_name=#{cartBookName},cart_book_sellprice=#{cartBookSellprice},cart_book_price=#{cartBookPrice},cart_book_number=#{cartBookNumber},cart_book_addtime=#{cartBookAddtime} where cart_id=#{cartId} 
+  	</update>
+  	
+  	<update id="updateCartAmount" parameterType="com.bookshop.cart.bean.CartDTO">
+  		update tb_cart set cart_book_number=#{cartBookNumber} where cart_id=#{cartId}
+  	</update>
+  	
+  	<delete id="deleteCart" parameterType="int">
+  		delete from tb_cart where cart_id=#{cartId}
+  	</delete>
+  	
+  	<delete id="deleteAllCart" parameterType="int">
+  		delete from tb_cart where cart_user_id=#{cartUserId}
+  	</delete>
+  	
+  	<select id="getUserCartByUserId" parameterType="int" resultMap="cartResultMapper">
+  	    select * from tb_cart where cart_user_id = #{cartUserId}
+  	</select>
+  	
+  	<select id="getCartBookByUserIdAndBookName" parameterType="java.util.Map" resultMap="cartResultMapper">
+  	    select * from tb_cart where cart_user_id = #{cartUserId} and cart_book_name = #{cartBookName}
+  	</select>
+  </mapper>

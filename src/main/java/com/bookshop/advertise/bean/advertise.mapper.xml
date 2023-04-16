@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.bookshop.advertise.bean.advertiseMapper">
+  	<resultMap type="com.bookshop.advertise.bean.AdvertiseDTO" id="advertiseResultMapper">
+  		<id column="advertise_id" property="adId"/>
+  		<result column="advertise_title" property="adTitle"/>
+  		<result column="advertise_content" property="adContent"/>
+  		<result column="advertise_publish_time" property="adPublishTime"/>
+  	</resultMap>
+  	
+  	<select id="getAdvertiseById" parameterType="int" resultMap="advertiseResultMapper">
+  		select advertise_id,advertise_title,advertise_content,advertise_publish_time from tb_advertise where advertise_id = #{adId} 
+  	</select>
+  	
+  	<select id="getAdvertiseCount" parameterType="int" resultType="int">
+		select count(advertise_id) from tb_advertise
+	</select>
+	
+	<select id="getAdvertiseByPage" parameterType="int" resultMap="advertiseResultMapper">
+		select * from tb_advertise order by advertise_publish_time desc limit #{pageno},5 
+	</select>
+	
+	<insert id="addAdvertise" parameterType="com.bookshop.advertise.bean.AdvertiseDTO">
+		insert into tb_advertise(advertise_title,advertise_content,advertise_publish_time) values(#{adTitle},#{adContent},#{adPublishTime})
+	</insert>
+	
+	<update id="updateAdvertise" parameterType="com.bookshop.advertise.bean.AdvertiseDTO">
+		update tb_advertise set advertise_title=#{adTitle},advertise_content=#{adContent},advertise_publish_time=#{adPublishTime} where advertise_id=#{adId}
+	</update>
+	
+	<delete id="deleteAdvertiseById" parameterType="int">
+		delete from tb_advertise where advertise_id = #{adId}
+	</delete>
+	
+  </mapper>

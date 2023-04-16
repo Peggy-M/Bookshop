@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.bookshop.address.bean.addressMapper">
+	<resultMap type="com.bookshop.address.bean.AddressDTO" id="addressResultMapper">
+		<id column="address_id" property="addressId"/>
+		<result column="address_username" property="addressUserName"/>
+		<result column="address_area" property="addressArea"/>
+		<result column="address_details" property="addressDetails"/>
+		<result column="address_phone" property="addressPhone"/>
+		<result column="address_postcode" property="addressPostcode"/>
+		<result column="address_user_id" property="addressUserId"/>
+	</resultMap> 
+	
+	<!-- 点击结算后修改购物车商品状态 (已提交)和订单编号-->
+  	<update id="updateCartOrderNumberAndStatus" parameterType="java.util.Map">
+  		update tb_cart set cart_status = 1,cart_order_number=#{orderNumber} where cart_id=#{cartId} 
+  	</update>
+  	
+	<!-- 修改收货地址-->
+  	<update id="updateAddress" parameterType="com.bookshop.address.bean.AddressDTO">
+  		update tb_address set address_username = #{addressUserName},
+  		address_area=#{addressArea},
+  		address_details=#{addressDetails},
+  		address_phone=#{addressPhone},
+  		address_postcode=#{addressPostcode}
+  		where address_id=#{addressId} 
+  	</update>
+	
+	<!--根据userId查询出当前用户的地址信息数量 -->
+	<select id="getUserAddressCount" parameterType="int" resultType="int">
+		select count(address_id) from tb_address where address_user_id = #{addressUserId}
+	</select> 
+	
+	<!--根据userId分页查询出当前用户的地址信息-->
+	<select id="getUserAddressByPage" parameterType="java.util.Map" resultMap="addressResultMapper">
+		select * from tb_address where address_user_id = #{addressUserId} order by address_id limit #{pageno},8
+	</select>
+	
+	<!--根据userId查询出当前用户的地址信息，前端使用-->
+	<select id="getUserAddressByUserId" parameterType="int" resultMap="addressResultMapper">
+		select * from tb_address where address_user_id = #{addressUserId}
+	</select>
+	
+	<!--查询出所有用户的所有地址信息数量 -->
+	<select id="getAddressCount" parameterType="int" resultType="int">
+		select count(address_id) from tb_address
+	</select>
+	
+	<!--分页查询出所有用户的地址信息-->
+	<select id="getAddressByPage" parameterType="int" resultMap="addressResultMapper">
+		select * from tb_address order by address_id limit #{pageno},8
+	</select>
+	
+	<!--根据地址ID删除 -->
+	<delete id="deleteAddress" parameterType="int">
+		delete from tb_address where address_id = #{addressId}
+	</delete>
+	
+	<!--根据地址ID查询 -->
+	<select id="queryAddressById" parameterType="int" resultMap="addressResultMapper">
+		select * from tb_address where address_id = #{addressId}
+	</select>
+	
+	<!--通过前端获取信息保存地址到用户地址信息  -->
+	<insert id="addAddress" parameterType="com.bookshop.address.bean.AddressDTO">
+		insert into tb_address(address_username,address_area,address_details,address_phone,address_postcode,address_user_id) values(#{addressUserName},#{addressArea},#{addressDetails},#{addressPhone},#{addressPostcode},#{addressUserId})
+	</insert>
+	
+  </mapper>
+  

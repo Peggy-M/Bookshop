@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.bookshop.order.bean.CompanyDTOMapper">
+	  <resultMap type="com.bookshop.order.bean.CompanyDTO" id="orderResultMapper">
+	  	<id column="company_id" property="companyId"/>
+	  	<result column="company_name" property="companyName"/>
+	  	<result column="company_com" property="companyCom"/>
+	  </resultMap>
+	  
+	  <select id="getCompanyList" resultMap="orderResultMapper" parameterType="int">
+	  	select * from tb_company order by company_id limit #{pageno},8
+	  </select>
+	  
+	  <insert id="insertCompany" parameterType="com.bookshop.order.bean.CompanyDTO">
+	  	insert into tb_company(company_name,company_com) values(#{companyName},#{companyCom})
+	  </insert>
+	  
+	  <select id="getCompanyCount" parameterType="int" resultType="int"> 
+		select count(company_id) from tb_company	  
+	  </select>
+	  
+	  <select id="getCompanyById" parameterType="int" resultMap="orderResultMapper">
+	  	select * from tb_company where company_id=#{companyId}
+	  </select>
+	  
+	  <delete id="deleteCompanyById" parameterType="int">
+	  	delete from tb_company where company_id = #{companyId}
+	  </delete>
+	  
+	  <update id="updateCompanyById" parameterType="com.bookshop.order.bean.CompanyDTO">
+	  	update tb_company set company_name=#{companyName},company_com=#{companyCom} where company_id=#{companyId}
+	  </update>
+</mapper>

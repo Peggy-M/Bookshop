@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bookshop.frontbook.bean.BookBeanMapper">
+
+<select id="selectByID" parameterType="Integer" resultMap="BookResultMap">
+	select * from tb_books where book_id = #{bookId}
+</select>
+
+<select id="selectByName" parameterType="String" resultMap="BookResultMap">
+	select * from tb_books where book_name = #{bookName}
+</select>
+
+<select id="selectByAuthor" parameterType="java.util.Map" resultMap="BookResultMap">
+	select * from tb_books where book_author = #{author} limit #{pageNo},10
+</select>
+
+<select id="selectByPress" parameterType="java.util.Map" resultMap="BookResultMap">
+	select * from tb_books where book_press = #{press} limit #{pageNo},10
+</select>
+
+<select id="selectBySales" parameterType="Integer" resultMap="BookResultMap">
+	select * from tb_books where book_sales = #{bookSales}
+</select>
+
+<select id="selectByDiscount" parameterType="Integer" resultMap="BookResultMap">
+	select * from tb_books where book_discount = #{bookDiscount}
+</select>
+
+<select id="selectByPublishTime" parameterType="String" resultMap="BookResultMap">
+	select * from tb_books where book_publish_time = #{bookPublishTime}
+</select>
+
+<select id="selectByStatus" parameterType="java.util.Map" resultMap="BookResultMap">
+	select * from tb_books where book_status = #{bookStatus} limit #{pageNo},#{pageSize}
+</select>
+
+<select id="selectByNumber" parameterType="Integer" resultMap="BookResultMap">
+	select * from tb_books where book_number = #{bookNumber} 
+</select>
+
+<select id="selectHomeByStatus" parameterType="Integer" resultMap="BookResultMap">
+	select * from tb_books where book_status = #{status} 
+</select>
+
+<select id="selectCountByCount" parameterType="Integer" resultType="Integer">
+	select count(book_id) from tb_books where book_status = #{status}
+</select>
+
+<select id="search" parameterType="String" resultMap="BookResultMap">
+	select * from tb_books where book_name like CONCAT(CONCAT('%', #{name}), '%')
+</select>
+
+<select id="selectCountByAuthor" parameterType="String" resultType="Integer">
+	select count(book_id) from tb_books where book_author = #{author}
+</select>
+
+<select id="selectCountByPress" parameterType="String" resultType="Integer">
+	select count(book_id) from tb_books where book_press = #{press}
+</select>
+
+<select id="selectByBookTypeThird" parameterType="Integer" resultMap="BookResultMap">
+	select * from tb_books where book_type_third = #{typeNo} limit #{pageNo},10
+</select>
+
+<select id="selectByBookTypeSecond" parameterType="Integer" resultMap="BookResultMap">
+	select * from tb_books where book_type_second = #{typeNo} limit #{pageNo},10
+</select>
+
+<select id="selectByBookTypeFirst" parameterType="Integer" resultMap="BookResultMap">
+	select * from tb_books where book_type_first = #{typeNo} limit 0,8
+</select>
+
+<select id="selectCountByTypeThird" parameterType="Integer" resultType="Integer">
+	select count(book_id) from tb_books where book_type_third = #{typeNo}
+</select>
+
+<select id="selectCountByTypeSecond" parameterType="Integer" resultType="Integer">
+	select count(book_id) from tb_books where book_type_second = #{typeNo}
+</select>
+
+<select id="selectPress" resultType="String">
+	select book_press from tb_books limit 0,10
+</select>
+
+<select id="selectBookNameByFirstType" parameterType="Integer" resultType="String">
+	select book_name from tb_books where book_type_first = #{typeNo} limit 0,10
+</select>
+
+<select id="selectTypeFirst" resultType="String">
+	select type_name from tb_type_first
+</select>
+
+<select id="selectTypeSecondByTypeFirst" parameterType="String" resultMap="TypeResultMap">
+	select t1.type_id,t1.type_name 
+	from tb_type_second t1 inner join 
+	tb_type_first t2 on 
+	t1.type_first_id = t2.type_id 
+	where t2.type_name = #{typeName}; 
+</select>
+
+<resultMap type="com.bookshop.frontbook.bean.BookBean" id="BookResultMap">
+	<id column="book_id" property="bookId"/>
+	<result column="book_name" property="bookName"/>
+	<result column="book_author" property="bookAuthor"/>
+	<result column="book_ISBN" property="bookISBN"/>
+	<result column="book_press" property="bookPress"/>
+	<result column="book_publish_time" property="bookPublishTime"/>
+	<result column="book_edition" property="bookEdition"/>
+	<result column="book_size" property="bookSize"/>
+	<result column="book_price" property="bookPrice"/>
+	<result column="book_sell_price" property="bookSellPrice"/>
+	<result column="book_prime_cost" property="bookPrimeCost"/>
+	<result column="book_prime_date" property="bookPrimeDate"/>
+	<result column="book_cover" property="bookCover"/>
+	<result column="book_type_first" property="bookTypeFirst"/>
+	<result column="book_type_second" property="bookTypeSecond"/>
+	<result column="book_type_third" property="bookTypeThird"/>
+	<result column="book_number" property="bookNumber"/>
+	<result column="book_details" property="bookDetails"/>
+	<result column="book_status" property="bookStatus"/>
+	<result column="book_sales" property="bookSales"/>
+</resultMap>
+
+<resultMap type="com.bookshop.frontbook.bean.SecondTypeBean" id="TypeResultMap">
+	<id column="type_id" property="typeId"/>
+	<result column="type_name" property="typeName"/>
+</resultMap>
+
+
+</mapper>

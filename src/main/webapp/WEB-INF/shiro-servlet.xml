@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util" 
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+        
+	<!-- <bean id="myRealm" class="com.bookshop.shiro.realm.MyBatisRealm"></bean> -->
+	
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+	    <!-- Single realm app.  If you have multiple realms, use the 'realms' property instead. -->
+	    <property name="realm" ref="userRealm"/>
+	</bean>
+	
+	 <!-- 3. 配置Realm -->
+    <!-- 3.1 直接配置继承了org.apache.shiro.realm.AuthorizingRealm的bean -->
+    <bean id="userRealm" class="com.bookshop.shiro.realm.MyBatisRealm">
+        <!-- 配置密码匹配器 -->
+        <property name="credentialsMatcher">
+            <bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+                <!-- 加密算法为MD5 -->
+                <property name="hashAlgorithmName" value="MD5"></property>
+                <!-- 加密次数 -->
+                <property name="hashIterations" value="1024"></property>
+            </bean>
+        </property>
+    </bean>
+	
+	<bean id="membersAuthc" class="org.apache.shiro.web.filter.authc.FormAuthenticationFilter">  
+	    <property name="loginUrl" value="/background/background_login.jsp"/>  
+	    <property name="successUrl" value="/background/index.jsp"/>  
+	</bean>
+	
+	<!-- 前端权限验证 -->
+	<bean id="frontPageAuthc" class="org.apache.shiro.web.filter.authc.FormAuthenticationFilter">  
+	    <property name="loginUrl" value="/front/login&amp;register/front_login.jsp"/> 
+	    <!-- <property name="successUrl" value="/background/index.jsp"/>   -->
+	</bean>
+	
+	<!-- <bean id="adminAuthc"  
+    class="org.apache.shiro.web.filter.authc.FormAuthenticationFilter">  
+	    <property name="loginUrl" value="${adminPath}/login" />  
+	    <property name="successUrl" value="${adminPath}" />  
+	</bean>  -->
+	
+	<!-- shiro在spring中的核心配置 -->
+    <!-- id=shiroFilter，此id名称必须要和web.xml中的shiroFilter的名称一致 -->
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+	    <property name="securityManager" ref="securityManager"/>
+	    <property name="unauthorizedUrl" value="/background/erroe.jsp"/>
+	    <!-- <property name="loginUrl" value="/user/login.jsp"/>
+	    <property name="successUrl" value="/index.html"/> -->
+	    <!-- <property name="filters">
+	        <util:map>
+	            <entry key="roleOfAny" value-ref=""/>
+	        </util:map>
+   	 	</property> -->
+   	 	<property name="filters">  
+	        <map>  
+	            <!-- <entry key="authc" value-ref="formAuthenticationFilter" />   -->
+	            <entry key="membersAuthc" value-ref="membersAuthc" />  
+	            <entry key="frontPageAuthc" value-ref="frontPageAuthc" />  
+	        </map>  
+    	</property> 
+	    <property name="filterChainDefinitions">
+	        <value>
+	        <!--start 前端 -->
+	        	/front/*/*.jsp = anon
+	           /front/*.jsp = anon
+	           /front/Member/*jsp = frontPageAuthc
+	           /Member/** = frontPageAuthc
+	        <!--end 前端  -->
+	          
+	        <!-- start 后台 -->
+ 	           /background/index.jsp=membersAuthc
+	           /user/updatePassword=membersAuthc
+				/** = anon
+	         <!--  /role/roleList.do=membersAuthc,perms["查看职位列表"]
+	           /role/addRole.do=membersAuthc,perms["新增职位"]
+	           /role/chackRole.do=membersAuthc,perms["新增职位"]
+	           /role/chackRoleUodate.do=membersAuthc,perms["修改职位"]
+	           /role/getRoleJson.do=membersAuthc,perms["修改职位"]
+	           /role/deleteRole.do=membersAuthc,perms["删除职位"]
+	           /role/getRole.do=membersAuthc,perms["修改职位"]
+	           /role/permissionList.do=membersAuthc,perms["查看权限列表"]
+	           /role/addPermission.do=membersAuthc,perms["增加权限"]
+	           /role/getPermissionJson.do=membersAuthc,perms["修改权限"]
+	           /role/getPermission.do=membersAuthc,perms["修改权限"]
+	           /role/getPermissionList.do=membersAuthc,perms["修改职位"]
+	           /role/userList.do=membersAuthc,perms["查看员工列表"]
+	           /role/chackUser.do=membersAuthc,perms["新增员工"]
+	           /role/chackUserUpdate.do=membersAuthc,perms["修改员工"]
+	           /role/getRoleName.do=membersAuthc,perms["修改员工"]
+	           /role/deleteUser.do=membersAuthc,perms["删除员工"]
+	           /role/addUser.do=membersAuthc,perms["新增员工"]
+	           /role/userUpdateGetInfo.do=membersAuthc,perms["修改员工"]
+	           /role/userUpdateSave.do=membersAuthc,perms["修改员工"]
+	           /role/userDetails.do=membersAuthc,perms["员工详情"]
+	           /role/userStatusUpdate.do=membersAuthc,perms["修改员工状态"]
+	           /background/user/add_user.jsp=membersAuthc,perms["修改员工"]
+	           /background/user/permission_list.jsp=membersAuthc,perms["查看权限列表"]
+	           /background/user/role.jsp=membersAuthc,perms["查看职位列表"]
+	           /background/user/user_info.jsp=membersAuthc,perms["员工详情"]
+	           /background/user/user_list.jsp=membersAuthc,perms["查看员工列表"]
+	           /book/list=membersAuthc,perms["查看图书列表"]
+	           /book/status0list=membersAuthc,perms["查看状态图书列表"]
+	           /book/status1list=membersAuthc,perms["查看状态图书列表"]
+	           /book/status2list=membersAuthc,perms["查看状态图书列表"]
+	           /book/status3list=membersAuthc,perms["查看状态图书列表"]
+	           /book/status4list=membersAuthc,perms["查看状态图书列表"]
+	           /book/status5list=membersAuthc,perms["查看状态图书列表"]
+	           /book/status6list=membersAuthc,perms["查看状态图书列表"]
+	           /book/status7list=membersAuthc,perms["查看状态图书列表"]
+	           /book/status8list=membersAuthc,perms["查看状态图书列表"]
+	           /book/status9list=membersAuthc,perms["查看状态图书列表"]
+	           /book/add=membersAuthc,perms["增加图书"]
+	           /book/checksecond=membersAuthc,perms["增加图书"]
+	           /book/checkthird=membersAuthc,perms["增加图书"]
+	           /book/getid=membersAuthc,perms["增加图书"]
+	           /book/upload.do=membersAuthc
+	           /book/saveBook=membersAuthc,perms["增加图书"]
+	           /book/status1=membersAuthc,perms["修改图书状态"]
+	           /book/status2=membersAuthc,perms["修改图书状态"]
+	           /book/status3=membersAuthc,perms["修改图书状态"]
+	           /book/status4=membersAuthc,perms["修改图书状态"]
+	           /book/status5=membersAuthc,perms["修改图书状态"]
+	           /book/status6=membersAuthc,perms["修改图书状态"]
+	           /book/status7=membersAuthc,perms["修改图书状态"]
+	           /book/status8=membersAuthc,perms["修改图书状态"]
+	           /book/status9=membersAuthc,perms["修改图书状态"]
+	           /book/bookDetails=membersAuthc,perms["查看图书详情"]
+	           /book/bookupdate=membersAuthc,perms["修改图书"]
+	           /book/updateBook=membersAuthc,perms["修改图书"]
+	           /background/book/book_add.jsp=membersAuthc,perms["增加图书"]
+	           /background/book/book_details.jsp=membersAuthc,perms["查看图书详情"]
+	           /background/book/book_list.jsp=membersAuthc,perms["查看图书列表"]
+	           /background/book/book_update.jsp=membersAuthc,perms["修改图书"]
+	           /background/book/status0.jsp=membersAuthc,perms["查看状态图书列表"]
+	           /background/book/status1.jsp=membersAuthc,perms["查看状态图书列表"]
+	           /background/book/status2.jsp=membersAuthc,perms["查看状态图书列表"]
+	           /background/book/status3.jsp=membersAuthc,perms["查看状态图书列表"]
+	           /background/book/status4.jsp=membersAuthc,perms["查看状态图书列表"]
+	           /background/book/status5.jsp=membersAuthc,perms["查看状态图书列表"]
+	           /background/book/status6.jsp=membersAuthc,perms["查看状态图书列表"]
+	           /background/book/status7.jsp=membersAuthc,perms["查看状态图书列表"]
+	           /background/book/status8.jsp=membersAuthc,perms["查看状态图书列表"]
+	           /background/book/status9.jsp=membersAuthc,perms["查看状态图书列表"]
+	           /background/advertise/adlist.jsp=membersAuthc,perms["公告管理"]
+	           /background/advertise/adshow.jsp=membersAuthc,perms["公告管理"]
+	           /background/advertise/adupdate.jsp=membersAuthc,perms["公告管理"]
+	           /background/advertise/adwrite.jsp=membersAuthc,perms["公告管理"]
+	           /advertise/adlist.do=membersAuthc,perms["公告管理"]
+	           /background/address/addresslist.jsp=membersAuthc,perms["用户地址管理"]
+	           /background/address/useraddresslist.jsp=membersAuthc,perms["用户地址管理"]
+	           /address/addresslist.do=membersAuthc,perms["用户地址管理"]
+	           /background/cart/cartlist.jsp=membersAuthc,perms["用户购物车管理"]
+	           /background/cart/usercartlist.jsp=membersAuthc,perms["用户购物车管理"]
+	           /cart/allcartlist.do=membersAuthc,perms["用户购物车管理"]
+	           /background/order/orderlist.jsp=membersAuthc,perms["用户订单管理"]
+	           /background/order/userOrderlist.jsp=membersAuthc,perms["用户订单管理"]
+	           /order/allorderlist.do=membersAuthc,perms["用户订单管理"]
+	           /type/typelist.do=membersAuthc,perms["图书目录管理"]
+	           /type2/typelist.do=membersAuthc,perms["图书目录管理"]
+	           /type3/typelist.do=membersAuthc,perms["图书目录管理"]
+	           /background/type/typefirst.jsp=membersAuthc,perms["图书目录管理"]
+	           /background/type/typesecond.jsp=membersAuthc,perms["图书目录管理"]
+	           /background/type/typethree.jsp=membersAuthc,perms["图书目录管理"]
+	           /background/type/typethird.jsp=membersAuthc,perms["图书目录管理"]
+	           /background/type/typetwo.jsp=membersAuthc,perms["图书目录管理"]
+	           /background/order/oldpay.jsp=membersAuthc,perms["用户订单管理"]
+	           /background/order/orderdetails.jsp=membersAuthc,perms["用户订单管理"]
+	           /background/order/payedorder.jsp=membersAuthc,perms["用户订单管理"]
+	           /background/company.jsp=membersAuthc,perms["用户订单管理"]
+	           /background/logistics.jsp=membersAuthc,perms["用户订单管理"]
+	           /order/getLogistis.do=membersAuthc,perms["用户订单管理"]
+	           /order/getOrderDetails.do=membersAuthc,perms["用户订单管理"]
+	           /order/payedOrder.do=membersAuthc,perms["用户订单管理"]
+	           /order/oldOrder.do=membersAuthc,perms["用户订单管理"]
+	           /order/companyList.do=membersAuthc,perms["用户订单管理"]
+	           /order/Ordered.do=membersAuthc,perms["用户订单管理"]
+	           /background/order/ordered.jsp=membersAuthc,perms["用户订单管理"]-->
+	          <!--end 后台 -->
+	        </value>
+	    </property>
+	</bean>
+	
+	<!-- 简单理解，就是将realm交给spring进行管理 -->
+	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+</beans>
